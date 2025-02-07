@@ -14,3 +14,5 @@ class Title:
         update = Title(self.title,last_chapter,last_update,self.site)        
 
         return update
+
+        

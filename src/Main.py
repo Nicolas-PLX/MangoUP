@@ -13,4 +13,3 @@ except IndexError:
 
 l = launcher.Launcher()
 l.launch()
-print("popo")

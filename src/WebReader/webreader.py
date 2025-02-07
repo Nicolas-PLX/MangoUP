@@ -1,0 +1,3 @@
+import strapy
+
+class WebReader:
