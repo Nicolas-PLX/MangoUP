@@ -14,7 +14,6 @@ def load_json(file_path):
              print(f"Error loading json file : {e}")
              return None
         
-        print(data)
         for t in data["mangas"]:
              t_obj = Title(t['title'],t['site'],t['url'],t['last_chapter'],
                            t['last_update'])
