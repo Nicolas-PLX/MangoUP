@@ -29,12 +29,14 @@ def save_json(file_path,data):
         try:
             with open(file_path,"w") as f:
                  json_data = {"mangas":[i.to_dict() if isinstance(i,Title) else i for i in data]}
-                 print(json_data)
                  json.dump(json_data,f,ensure_ascii=False,indent=4)
-                 print("Save complete.")
+                 print(f"Save complete in file \"{file_path}\".")
         except FileNotFoundError:
              print(f"Error : file '{file_path} not found.")
         except json.JSONDecodeError as e:
              print(f"Error writing json file : {e}")
              return None
         
+
+def test():
+     print("popo")

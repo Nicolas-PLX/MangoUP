@@ -1,8 +1,12 @@
 import tkinter as tk
 from Launcher.model import Model
+from Launcher.redirectText import RedirectText
+from Save.configjson import test
+import sys
 
 
 class Launcher:
+
     def __init__(self):
         wd = tk.Tk()
         wd.title("MangoUP")
@@ -19,7 +23,7 @@ class Launcher:
         wd.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
 
         wd.resizable(False,False)
-        wd.iconbitmap('./assets/pp.ico')
+        wd.iconbitmap('../assets/pp.ico')
 
         self.wd = wd
         self.model = Model()
@@ -51,10 +55,10 @@ class Launcher:
         check_update_button = tk.Button(bottom_controls_frame, text="Check Update !", width=120)
         check_update_button.pack(side=tk.BOTTOM,fill=tk.BOTH, padx=10,pady=10)
 
-        save_button = tk.Button(bottom_controls_frame,text="Sauvegarder",width=60)
+        save_button = tk.Button(bottom_controls_frame,text="Sauvegarder",width=60, command=self.model.save)
         save_button.pack(side=tk.LEFT,padx=10,pady=10)
 
-        load_button = tk.Button(bottom_controls_frame,text="Charger",width=60)
+        load_button = tk.Button(bottom_controls_frame,text="Charger",width=60, command=self.model.load)
         load_button.pack(side=tk.RIGHT,padx=10,pady=10)
 
         log_control_frame = tk.Frame(main_frame)
@@ -63,8 +67,9 @@ class Launcher:
         log_text = tk.Text(log_control_frame, wrap=tk.WORD, width=40)
         log_text.pack(fill=tk.BOTH, expand=True,padx=10,pady=10)
 
+        redirect = RedirectText(log_text)
+        sys.stdout = redirect
 
-        
 
         
 
