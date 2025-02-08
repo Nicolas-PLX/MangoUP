@@ -14,22 +14,27 @@ def load_json(file_path):
              print(f"Error loading json file : {e}")
              return None
         
-        for t in data["title"]:
-             t_obj = Title(t['name'],t['site'],t['url'],t['last_chapter'],
+        print(data)
+        for t in data["mangas"]:
+             t_obj = Title(t['title'],t['site'],t['url'],t['last_chapter'],
                            t['last_update'])
              list_t.append(t_obj)
         
-        print(f"Load {len(list_t)}...")
+        print(f"Load {len(list_t)} title(s)...")
         print("Loading complete.")
         return list_t
 
 
-def save_json(file_path,info):
+def save_json(file_path,data):
         try:
             with open(file_path,"w") as f:
-                 pass
+                 json_data = {"mangas":[i.to_dict() if isinstance(i,Title) else i for i in data]}
+                 print(json_data)
+                 json.dump(json_data,f,ensure_ascii=False,indent=4)
+                 print("Save complete.")
         except FileNotFoundError:
              print(f"Error : file '{file_path} not found.")
         except json.JSONDecodeError as e:
              print(f"Error writing json file : {e}")
              return None
+        

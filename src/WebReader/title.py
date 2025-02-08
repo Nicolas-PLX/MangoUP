@@ -15,5 +15,14 @@ class Title:
         update = Title(self.title,self.url,last_chapter,last_update,self.site)        
 
         return update
+    
+    def to_dict(self):
+        return {
+            "title":self.title,
+            "site":self.site,
+            "url":self.url,
+            "last_chapter":self.last_chapter,
+            "last_update":self.last_update
+        }
 
     

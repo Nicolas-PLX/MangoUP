@@ -6,6 +6,6 @@ class ManganatoSpider(scrapy.Spider):
 
     def get_url(self):
         pass
-    
+     
     def parse(self,response):
-        pass
+        pass 
