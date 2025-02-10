@@ -1,12 +1,11 @@
 import tkinter as tk
 
 class RedirectText:
-    def __init__(self, text_widget):
-        self.text_widget = text_widget
+    def __init__(self, widget):
+        self.widget = widget
 
-    def write(self, string):
-        self.text_widget.insert(tk.END, string)
-        self.text_widget.see(tk.END) 
+    def write(self, text):
+        self.widget.append(text)
 
     def flush(self):
-        pass 
+        pass
