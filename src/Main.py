@@ -16,7 +16,7 @@ except IndexError:
 
 app = QApplication(sys.argv)
 
-l = launcher.Launcher()
+l = launcher.Launcher(app)
 l.show()
 sys.exit(app.exec())
 
