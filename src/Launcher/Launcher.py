@@ -1,83 +1,100 @@
-import tkinter as tk
+from PySide6.QtWidgets import (
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+    QPushButton, QListWidget, QTextEdit, QDialog
+)
+from PySide6.QtCore import Qt
+import sys
 from Launcher.model import Model
 from Launcher.redirectText import RedirectText
+from Launcher.customMenus import addDialog
 from Save.configjson import test
-import sys
 
-
-class Launcher:
-
-    def __init__(self):
-        wd = tk.Tk()
-        wd.title("MangoUP")
+class Launcher(QMainWindow):
+    def __init__(self, qApp):
+        super().__init__()
         
+        self.qApp = qApp
+        self.setWindowTitle("MangoUP")
+
         window_width = 1200
         window_height = 800
+        self.resize(window_width, window_height)
+        self.setFixedSize(window_width, window_height)
 
-        screen_width = wd.winfo_screenwidth()
-        screen_height = wd.winfo_screenheight()
-
-        center_x = int(screen_width/2 - window_width / 2)
-        center_y = int(screen_height/2 - window_height / 2)
-
-        wd.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
-
-        wd.resizable(False,False)
-        wd.iconbitmap('../assets/pp.ico')
-
-        self.wd = wd
         self.model = Model()
 
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
 
-    def launch(self):
-        main_frame = tk.Frame(self.wd)
-        main_frame.pack(fill=tk.BOTH, expand=True)
-        #list_manga_text.insert(tk.END,"Pipi")
+        main_layout = QVBoxLayout()
+        central_widget.setLayout(main_layout)
 
-        top_controls_frame = tk.Frame(main_frame)
-        top_controls_frame.pack(side= tk.TOP, fill=tk.X, padx=10,pady=10)
+        # Top Controls
+        top_controls_layout = QHBoxLayout()
 
-        add_manga_button = tk.Button(top_controls_frame,text="Ajouter",bg="green",width=15)
-        add_manga_button.pack(side = tk.LEFT,padx=5,pady=10)
+        add_manga_button = QPushButton("Ajouter")
+        add_manga_button.setStyleSheet("background-color: green; width: 10em;")
+        add_manga_button.clicked.connect(self.addMenu)
+        top_controls_layout.addWidget(add_manga_button)
 
-        rm_manga_button = tk.Button(top_controls_frame,text="Supprimer",bg="red",width=15)
-        rm_manga_button.pack(side=tk.LEFT,padx=5,pady=10)
-
-        list_manga_frame = tk.Frame(main_frame)
-        list_manga_frame.pack(side=tk.LEFT, fill = tk.BOTH,expand=True)
-
-        list_manga_text = tk.Listbox(list_manga_frame,width=40,height=50)
-        list_manga_text.pack(side=tk.LEFT, padx=10, pady=10)
-
-        bottom_controls_frame = tk.Frame(main_frame)
-        bottom_controls_frame.pack(side=tk.BOTTOM,padx=10,pady=10)
-
-        check_update_button = tk.Button(bottom_controls_frame, text="Check Update !", width=120)
-        check_update_button.pack(side=tk.BOTTOM,fill=tk.BOTH, padx=10,pady=10)
-
-        save_button = tk.Button(bottom_controls_frame,text="Sauvegarder",width=60, command=self.model.save)
-        save_button.pack(side=tk.LEFT,padx=10,pady=10)
-
-        load_button = tk.Button(bottom_controls_frame,text="Charger",width=60, command=self.model.load)
-        load_button.pack(side=tk.RIGHT,padx=10,pady=10)
-
-        log_control_frame = tk.Frame(main_frame)
-        log_control_frame.pack(side = tk.RIGHT, fill = tk.BOTH, expand=True)
-
-        log_text = tk.Text(log_control_frame, wrap=tk.WORD, width=40)
-        log_text.pack(fill=tk.BOTH, expand=True,padx=10,pady=10)
-
-        redirect = RedirectText(log_text)
-        sys.stdout = redirect
+        rm_manga_button = QPushButton("Supprimer")
+        rm_manga_button.setStyleSheet("background-color: red; width: 10em;")
+        top_controls_layout.addWidget(rm_manga_button)
 
 
-        
+        # Main Frame
+        middle_layout = QHBoxLayout()
 
-        self.wd.mainloop()
+        # List Manga Frame
+        list_manga_layout = QVBoxLayout()
+        self.list_manga_text = QListWidget()
+        self.list_manga_text.setFixedSize(350, 750)
+        list_manga_layout.addLayout(top_controls_layout)
+        list_manga_layout.addWidget(self.list_manga_text)
+        middle_layout.addLayout(list_manga_layout)
 
-    
-    def ajout_frame(self):
-        pass
+        # Log Control Frame
+        log_control_layout = QVBoxLayout()
+        self.log_text = QTextEdit()
+        self.log_text.setReadOnly(True)
+        self.log_text.setFixedSize(825, 660)
+        log_control_layout.addWidget(self.log_text)
+        middle_layout.addLayout(log_control_layout)
 
-    def remove_frame(self):
-        pass
+        main_layout.addLayout(middle_layout)
+
+        # Bottom Controls
+        bottom_controls_layout = QHBoxLayout()
+
+        save_button = QPushButton("Sauvegarder")
+        save_button.clicked.connect(self.model.save)
+        bottom_controls_layout.addWidget(save_button)
+
+        load_button = QPushButton("Charger")
+        load_button.clicked.connect(self.model.load)
+        bottom_controls_layout.addWidget(load_button)
+
+        check_update_button = QPushButton("Check Update !")
+        check_update_button.setStyleSheet("width: 60em;")
+        bottom_controls_layout.addWidget(check_update_button)
+
+        log_control_layout.addLayout(bottom_controls_layout)
+
+        sys.stdout = RedirectText(self.log_text, self.qApp)
+
+
+    def addMenu(self):
+        dialog = addDialog()
+        if dialog.exec_() == QDialog.Accepted:  # Attend que le dialogue soit fermé
+            # Récupérer les valeurs des champs
+            title = dialog.title_input.text()
+            url = dialog.url_input.text()
+            site = dialog.dropdown.currentText()
+            number = float(dialog.number_input.text())
+
+            new_title = self.model.add(title,site,url,number)
+
+            if new_title != None:
+                self.list_manga_text.addItem(new_title)
+
+            #self.list_manga_text.addItem(f"{title} | {url} | {number}")

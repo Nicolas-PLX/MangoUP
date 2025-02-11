@@ -11,8 +11,8 @@ class Title:
 
 
     def update_title(self,last_chapter):
-        last_update = date.today()
-        update = Title(self.title,self.url,last_chapter,last_update,self.site)        
+        last_update = date.today().strftime('%Y-%m-%d')
+        update = Title(self.title,self.site,self.url,last_chapter,last_update)        
 
         return update
     
